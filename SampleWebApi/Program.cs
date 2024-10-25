@@ -1,3 +1,5 @@
+using API_Iquirium.Repositories;
+using API_Iquirium.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 using SampleWebApi.Repository;
 
@@ -6,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IFeedbackProdutoRepository, FeedbackProdutoRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
