@@ -15,9 +15,10 @@ namespace SampleWebApi.Repository.Mapping
             builder.Property(x => x.Comentario).HasMaxLength(128);
             builder.Property(x => x.DataEnvio).IsRequired();
 
-            builder.HasOne<TipoFeedbackProduto>().WithOne()
-                .HasForeignKey<FeedbackProduto>(x => x.IdTipoFeedbackProduto)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne<TipoFeedbackProduto>()
+            .WithMany()
+            .HasForeignKey(x => x.IdTipoFeedbackProduto)
+            .OnDelete(DeleteBehavior.Cascade);
 
         }
 
