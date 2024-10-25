@@ -11,12 +11,16 @@ namespace SampleWebApi.Repository
 
         public DbSet<FeedbackProduto> FeedbackProduto { get; set; }
         public DbSet<TipoFeedbackProduto> TipoFeedbackProduto { get; set; }
+        public DbSet<Perfil> Perfil { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new FeedbackProdutoMapping());
             modelBuilder.ApplyConfiguration(new TipoFeedbackProdutoMapping());
+            modelBuilder.ApplyConfiguration(new PerfilMapping());
+            modelBuilder.ApplyConfiguration(new UsuarioMapping());
 
             base.OnModelCreating(modelBuilder);
         }
