@@ -20,6 +20,11 @@ namespace SampleWebApi.Repository.Mapping
             .HasForeignKey(x => x.IdTipoFeedbackProduto)
             .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne<Usuario>()
+            .WithMany()
+            .HasForeignKey(x => x.IdUsuarioEnvio)
+            .OnDelete(DeleteBehavior.Cascade);
+
         }
 
     }
