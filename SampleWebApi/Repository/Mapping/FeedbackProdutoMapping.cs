@@ -22,7 +22,7 @@ namespace SampleWebApi.Repository.Mapping
 
             builder.HasOne<Usuario>()
             .WithMany()
-            .HasForeignKey(x => x.IdUsuarioEnvio)
+            .HasForeignKey(x => x.IdUsuario)
             .OnDelete(DeleteBehavior.Cascade);
 
         }

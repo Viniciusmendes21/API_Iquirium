@@ -50,38 +50,25 @@ namespace API_Iquirium.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (feedbackProduto.IdTipoFeedbackProduto <= 0)
-            {
-                return BadRequest("O campo IdTipoFeedbackProduto é obrigatório.");
-            }
-
-            if (feedbackProduto.IdUsuarioEnvio <= 0)
-            {
-                return BadRequest("O campo IdUsuarioEnvio é obrigatório.");
-            }
-
             try
             {
                 await _feedbackRepository.AddFeedbackProduto(feedbackProduto);
                 return CreatedAtAction(nameof(GetFeedbackProdutoById), new { id = feedbackProduto.IdFeedbackProduto }, feedbackProduto);
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
-                var innerException = ex.InnerException as PostgresException;
-                if (innerException != null && innerException.SqlState == "22001")
-                {
-                    return BadRequest("O comentário excedeu o limite de 100 caracteres. Por favor, reduza o comprimento do texto.");
-                }
-                return StatusCode(500, "Ocorreu um erro ao salvar os dados. Tente novamente mais tarde.");
+                return BadRequest(ex.Message);
             }
         }
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFeedbackProduto(int id, [FromBody] FeedbackProduto feedbackProduto)
         {
-            if (feedbackProduto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Dados inválidos.");
+                return BadRequest(ModelState);
             }
 
             var checkFeedback = await _feedbackRepository.GetFeedbackProdutoByIdAsync(id);
@@ -91,7 +78,7 @@ namespace API_Iquirium.Controllers
             }
 
             checkFeedback.IdTipoFeedbackProduto = feedbackProduto.IdTipoFeedbackProduto;
-            checkFeedback.IdUsuarioEnvio = feedbackProduto.IdUsuarioEnvio;
+            checkFeedback.IdUsuario = feedbackProduto.IdUsuario;
             checkFeedback.Comentario = feedbackProduto.Comentario;
 
             await _feedbackRepository.UpdateFeedbackProduto(checkFeedback);
