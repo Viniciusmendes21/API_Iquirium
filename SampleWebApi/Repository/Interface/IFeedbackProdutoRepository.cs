@@ -1,6 +1,6 @@
-﻿using API_Iquirium.Models;
+﻿using SampleWebApi.Models;
 
-namespace API_Iquirium.Repositories.Interface
+namespace SampleWebApi.Repository.Interface
 {
     public interface IFeedbackProdutoRepository
     {

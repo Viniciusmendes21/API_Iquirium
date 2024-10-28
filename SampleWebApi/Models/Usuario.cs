@@ -1,4 +1,4 @@
-﻿namespace API_Iquirium.Models
+﻿namespace SampleWebApi.Models
 {
     public class Usuario
     {

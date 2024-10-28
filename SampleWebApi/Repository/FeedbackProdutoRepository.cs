@@ -1,10 +1,8 @@
-﻿using API_Iquirium.Models;
+﻿using SampleWebApi.Models;
 using Microsoft.EntityFrameworkCore;
-using API_Iquirium.Repositories.Interface;
-using API_Iquirium.Models;
-using SampleWebApi.Repository;
+using SampleWebApi.Repository.Interface;
 
-namespace API_Iquirium.Repositories
+namespace SampleWebApi.Repository
 {
     public class FeedbackProdutoRepository : IFeedbackProdutoRepository
     {

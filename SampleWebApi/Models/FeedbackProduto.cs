@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API_Iquirium.Models
+namespace SampleWebApi.Models
 {
     public class FeedbackProduto
     {

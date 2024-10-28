@@ -1,11 +1,9 @@
-﻿using API_Iquirium.Models;
-using API_Iquirium.Repositories;
-using API_Iquirium.Repositories.Interface;
+﻿using SampleWebApi.Models;
+using SampleWebApi.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
-namespace API_Iquirium.Controllers
+
+namespace SampleWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,4 +1,4 @@
-﻿using API_Iquirium.Models;
+﻿using SampleWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
