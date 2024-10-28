@@ -10,6 +10,7 @@ namespace SampleWebApi.Repository
             : base(options) { }
 
         public DbSet<FeedbackProduto> FeedbackProduto { get; set; }
+        //public DbSet<FeedbackUsuario> FeedbackUsuario { get; set; }
         public DbSet<TipoFeedbackProduto> TipoFeedbackProduto { get; set; }
         public DbSet<Perfil> Perfil { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
