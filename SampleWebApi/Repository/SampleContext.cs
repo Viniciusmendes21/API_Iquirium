@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SampleWebApi.Model;
+﻿using SampleWebApi.Models;
+using Microsoft.EntityFrameworkCore;
 using SampleWebApi.Repository.Mapping;
 
 namespace SampleWebApi.Repository
@@ -9,16 +9,19 @@ namespace SampleWebApi.Repository
         public SampleContext(DbContextOptions<SampleContext> options)
             : base(options) { }
 
-        public DbSet<Todo> Todos { get; set; }
-        public DbSet<Fabricante> Fabricantes { get; set; }
-        public DbSet<Veiculo> Veiculos { get; set; }
+        public DbSet<FeedbackProduto> FeedbackProduto { get; set; }
+        //public DbSet<FeedbackUsuario> FeedbackUsuario { get; set; }
+        public DbSet<TipoFeedbackProduto> TipoFeedbackProduto { get; set; }
+        public DbSet<Perfil> Perfil { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new TodoMapping());
-            modelBuilder.ApplyConfiguration(new FabricanteMapping());
-            modelBuilder.ApplyConfiguration(new VeiculoMapping());
+            modelBuilder.ApplyConfiguration(new FeedbackProdutoMapping());
+            modelBuilder.ApplyConfiguration(new TipoFeedbackProdutoMapping());
+            modelBuilder.ApplyConfiguration(new PerfilMapping());
+            modelBuilder.ApplyConfiguration(new UsuarioMapping());
 
             base.OnModelCreating(modelBuilder);
         }
