@@ -32,7 +32,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task shouldGetAllFeedbackProduto()
+        public async Task shouldListAllFeedbackProduto()
         {
             var feedbacks = new List<FeedbackProduto>
             {
@@ -52,7 +52,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetFeedbackProdutoById_ReturnsOkResult_WhenFeedbackExists()
+        public async Task shouldReturnOkWhenFeedbackProdutoExistsById()
         {
             // Arrange
             var feedback = new FeedbackProduto
@@ -76,7 +76,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetFeedbackProdutoById_ReturnsNotFound_WhenFeedbackDoesNotExist()
+        public async Task shouldReturnNotFoundWhenFeedbackProdutoDoesNotExistById()
         {
             // Arrange
             _mockFeedbackProdutoRepo.Setup(repo => repo.GetFeedbackProdutoByIdAsync(1)).ReturnsAsync((FeedbackProduto)null);
@@ -89,7 +89,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task PostFeedbackProduto_ReturnsCreatedAtAction_WhenModelIsValid()
+        public async Task shouldReturnCreatedAtActionWhenPostFeedbackProdutoIsValid()
         {
             // Arrange
             var feedbackProduto = new FeedbackProduto
@@ -116,7 +116,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task PostFeedbackProduto_ReturnsBadRequest_WhenModelIsInvalid()
+        public async Task shouldReturnBadRequestWhenPostFeedbackProdutoIsInvalid()
         {
             // Arrange
             var feedbackProduto = new FeedbackProduto
@@ -137,7 +137,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task PutFeedbackProduto_ReturnsNoContent_WhenFeedbackIsUpdated()
+        public async Task shouldReturnNoContentWhenFeedbackProdutoIsUpdated()
         {
             // Arrange
             var feedbackProduto = new FeedbackProduto
@@ -158,19 +158,29 @@ namespace SampleWebApi.Tests.Controllers
                 DataEnvio = DateTime.UtcNow
             };
 
+            var usuario = new Usuario { IdUsuario = 1 }; // Mock do usuário existente
+            var tipoFeedbackProduto = new TipoFeedbackProduto { IdTipoFeedbackProduto = 1 }; // Mock do tipo de feedback existente
+
             // Mock dos repositórios
-            _mockFeedbackProdutoRepo.Setup(repo => repo.GetFeedbackProdutoByIdAsync(feedbackProduto.IdFeedbackProduto)).ReturnsAsync(existingFeedback);
-            _mockFeedbackProdutoRepo.Setup(repo => repo.UpdateFeedbackProduto(It.IsAny<FeedbackProduto>())).Returns(Task.CompletedTask);
+            _mockFeedbackProdutoRepo.Setup(repo => repo.GetFeedbackProdutoByIdAsync(feedbackProduto.IdFeedbackProduto))
+                                     .ReturnsAsync(existingFeedback);
+            _mockFeedbackProdutoRepo.Setup(repo => repo.UpdateFeedbackProduto(It.IsAny<FeedbackProduto>()))
+                                     .Returns(Task.CompletedTask);
+            _mockUsuarioRepo.Setup(repo => repo.GetUsuarioByIdAsync(feedbackProduto.IdUsuario.Value))
+                            .ReturnsAsync(usuario); // Garantir que o usuário exista
+            _mockTipoFeedbackProdutoRepo.Setup(repo => repo.GetTipoFeedbackProdutoByIdAsync(feedbackProduto.IdTipoFeedbackProduto.Value))
+                                         .ReturnsAsync(tipoFeedbackProduto); // Garantir que o tipo de feedback exista
 
             // Act
             var result = await _controller.PutFeedbackProduto(feedbackProduto.IdFeedbackProduto, feedbackProduto);
 
             // Assert
-            var noContentResult = Assert.IsType<NoContentResult>(result);  // Verifique se é NoContent
+            var noContentResult = Assert.IsType<NoContentResult>(result);  // Esperado NoContent
         }
 
+
         [Fact]
-        public async Task PutFeedbackProduto_ReturnsNotFound_WhenFeedbackDoesNotExist()
+        public async Task shouldReturnNotFoundWhenFeedbackProdutoDoesNotExistForUpdate()
         {
             // Arrange
             var feedbackProduto = new FeedbackProduto
@@ -192,7 +202,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task DeleteFeedbackProduto_ReturnsNoContent_WhenFeedbackIsDeleted()
+        public async Task shouldReturnNoContentWhenFeedbackProdutoIsDeleted()
         {
             // Arrange
             var feedbackProduto = new FeedbackProduto
@@ -215,7 +225,7 @@ namespace SampleWebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task DeleteFeedbackProduto_ReturnsNotFound_WhenFeedbackDoesNotExist()
+        public async Task shouldReturnNotFoundWhenFeedbackProdutoDoesNotExistForDeletion()
         {
             // Arrange
             _mockFeedbackProdutoRepo.Setup(repo => repo.GetFeedbackProdutoByIdAsync(1)).ReturnsAsync((FeedbackProduto)null);
@@ -226,6 +236,5 @@ namespace SampleWebApi.Tests.Controllers
             // Assert
             Assert.IsType<NotFoundResult>(result);
         }
-
     }
 }
