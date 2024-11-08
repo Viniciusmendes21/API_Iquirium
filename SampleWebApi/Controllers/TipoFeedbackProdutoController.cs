@@ -41,7 +41,7 @@ namespace SampleWebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> PostTipoFeebackProduto([FromBody] TipoFeedbackProduto tipoFeedbackProduto)
+        public async Task<IActionResult> PostTipoFeedbackProduto([FromBody] TipoFeedbackProduto tipoFeedbackProduto)
         {
             if (!ModelState.IsValid)
             {
