@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - branch**
+      - branch-*
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -47,3 +47,4 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
