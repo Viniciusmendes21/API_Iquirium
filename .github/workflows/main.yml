@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - branch-**
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -53,13 +52,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          # Start SonarScanner analysis
+          # Start SonarScanner analysis with coverage path configuration
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="SampleWebApi.Tests/TestResults/**/*.xml"
           
-          # Run tests and generate code coverage report, saving to SampleWebApi.Tests/TestResults
+          # Run the tests and collect coverage in OpenCover format
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./SampleWebApi.Tests/TestResults/ /p:CoverletOutputFormat=opencover
 
-          # List the SampleWebApi.Tests/TestResults directory to display the path of the coverage file
+          # List the TestResults directory to confirm coverage file location
           Write-Host "Coverage file location:"
           dir ./SampleWebApi.Tests/TestResults/**/*.xml
 
