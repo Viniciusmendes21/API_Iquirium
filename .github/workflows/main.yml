@@ -45,13 +45,14 @@ jobs:
         shell: powershell
         run: |
           # Start the SonarCloud analysis
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="SampleWebApi.Tests/coverage.opencover.xml"
 
-          # Run tests and generate code coverage reports
-          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover"
-          # List files in the TestResults directory recursively to find the coverage file
-          Write-Host "LISTANDO ARQUIVOS"
-          Get-ChildItem -Recurse -Filter "coverage.opencover.xml" | Select-Object FullName
+          # Run tests and generate code coverage reports, saving to SampleWebApi.Tests directory
+          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory SampleWebApi.Tests
+
+          # Verify if the coverage file is saved in SampleWebApi.Tests
+          Write-Host "Listing files in SampleWebApi.Tests directory:"
+          Get-ChildItem -Path "SampleWebApi.Tests" -Recurse -Filter "coverage.opencover.xml" | Select-Object FullName
 
           # End the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
