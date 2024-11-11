@@ -60,7 +60,7 @@ jobs:
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./TestResults/ /p:CoverletOutputFormat=opencover
 
           # List the TestResults directory to display the path of the coverage file
-          Write-Host "Coverage file location:"
+          Write-Host "Coverage file location(s):"
           dir ./TestResults/**/*.xml
 
           # Finish SonarScanner analysis
