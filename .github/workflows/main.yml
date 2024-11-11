@@ -50,9 +50,19 @@ jobs:
           # Run tests and generate code coverage reports, saving to SampleWebApi.Tests directory
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory SampleWebApi.Tests
 
-          # Verify if the coverage file is saved in SampleWebApi.Tests
-          Write-Host "LISTANDO DIRETORIO:"
-          dir SampleWebApi.Tests
+          # List all files generated in the repository to locate coverage.opencover.xml
+          Write-Host "Procurando arquivos de cobertura em todo o repositório:"
+          Get-ChildItem -Path $PWD -Recurse | ForEach-Object {
+              Write-Host "Arquivo encontrado: $($_.FullName)"
+          }
+
+          # Verifique especificamente se o arquivo de cobertura existe e exiba o caminho completo
+          $coveragePath = Get-ChildItem -Path $PWD -Recurse -Filter "coverage.opencover.xml" | Select-Object -First 1
+          if ($coveragePath) {
+              Write-Host "Arquivo de cobertura encontrado em: $($coveragePath.FullName)"
+          } else {
+              Write-Host "Arquivo de cobertura NÃO encontrado"
+          }
 
           # End the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
