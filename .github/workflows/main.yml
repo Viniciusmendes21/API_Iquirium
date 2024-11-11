@@ -49,7 +49,7 @@ jobs:
           
           # List the directory content after starting the SonarCloud analysis
           Write-Host "Listing directory content after starting SonarCloud analysis:"
-          Get-ChildItem -Recurse -Filter "coverage.opencover.xml" | Select-Object FullName
+          dir **/coverage.opencover.xml
 
           # Run tests and generate code coverage reports
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover"
