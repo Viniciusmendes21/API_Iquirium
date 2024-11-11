@@ -49,7 +49,7 @@ jobs:
           
           # List the directory content after starting the SonarCloud analysis
           Write-Host "Listing directory content after starting SonarCloud analysis:"
-          dir
+          dir ./SampleWebApi.Tests
 
           # Run tests and generate code coverage reports
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover"
