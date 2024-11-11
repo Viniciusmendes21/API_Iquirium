@@ -1,4 +1,6 @@
-﻿namespace SampleWebApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SampleWebApi.Models
 {
     public class Report
     {
@@ -13,6 +15,9 @@
     public class TipoReport
     {
         public string IdTipoReport { get; set; }
+
+        [Required(ErrorMessage = "O campo Nome é obrigatório")]
+        [StringLength(128, ErrorMessage = "Você excedeu o número de caracteres máximo: 128")]
         public string Nome {  get; set; }
     }
 }

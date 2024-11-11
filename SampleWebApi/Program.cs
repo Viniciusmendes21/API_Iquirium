@@ -11,6 +11,11 @@ builder.Services.AddScoped<IFeedbackProdutoRepository, FeedbackProdutoRepository
 builder.Services.AddScoped<IPerfilRepository, PerfilRepository>();
 builder.Services.AddScoped<ITipoFeedbackProdutoRepository, TipoFeedbackProdutoRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITipoReportRepository, TipoReportRepository>();
+builder.Services.AddScoped<ITipoFeedbackUsuarioRepository, TipoFeedbackUsuarioRepository>();
+
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,4 +1,6 @@
-﻿namespace SampleWebApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SampleWebApi.Models
 {
     public class FeedbackUsuario
     {
@@ -16,7 +18,10 @@
 
     public class TipoFeedbackUsuario
     {
-        public int IdTipoFeedbackUsurio { get; set; }
+        public int IdTipoFeedbackUsuario { get; set; }
+
+        [Required(ErrorMessage = "O campo Nome é obrigatório")]
+        [StringLength(128, ErrorMessage = "Você excedeu o número de caracteres máximo: 128")]
         public string Nome { get; set; }
     }
     
