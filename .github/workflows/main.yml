@@ -47,12 +47,16 @@ jobs:
           # Start the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml"
           
-          # List the directory content after starting the SonarCloud analysis
+          # List the directory content after starting SonarCloud analysis
           Write-Host "Listing directory content after starting SonarCloud analysis:"
           Get-ChildItem -Recurse -Filter "coverage.opencover.xml" | Select-Object FullName
 
           # Run tests and generate code coverage reports
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory ./TestResults
+
+          # List files in the TestResults directory to confirm coverage file is there
+          Write-Host "Listing files in ./TestResults directory:"
+          Get-ChildItem ./TestResults
 
           # End the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
