@@ -51,8 +51,8 @@ jobs:
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory SampleWebApi.Tests
 
           # Verify if the coverage file is saved in SampleWebApi.Tests
-          Write-Host "Listing files in SampleWebApi.Tests directory:"
-          Get-ChildItem -Path "SampleWebApi.Tests" -Recurse -Filter "coverage.opencover.xml" | Select-Object FullName
+          Write-Host "LISTANDO DIRETORIO:"
+          dir SampleWebApi.Tests
 
           # End the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
