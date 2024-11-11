@@ -54,13 +54,10 @@ jobs:
         shell: powershell
         run: |
           # Start SonarScanner analysis
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/*.xml"
           
           # Run tests and generate code coverage report
-          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover"
-
-          # List files to verify that the coverage file exists
-          dir # Check where the coverage file is generated (coverage.opencover.xml)
+          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./TestResults/ /p:CoverletOutputFormat=opencover
 
           # Finish SonarScanner analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
