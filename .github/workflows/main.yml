@@ -61,7 +61,7 @@ jobs:
 
           # List the TestResults directory to display the path of the coverage file
           Write-Host "Coverage file location(s):"
-          dir ./TestResults
+          dir .
 
           # Finish SonarScanner analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
