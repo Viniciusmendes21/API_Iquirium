@@ -59,6 +59,10 @@ jobs:
           # Run tests and generate code coverage report
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./TestResults/ /p:CoverletOutputFormat=opencover
 
+          # List the TestResults directory to display the path of the coverage file
+          Write-Host "Coverage file location:"
+          dir ./TestResults/**/*.xml
+
           # Finish SonarScanner analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
