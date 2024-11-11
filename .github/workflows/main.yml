@@ -54,14 +54,14 @@ jobs:
         shell: powershell
         run: |
           # Start SonarScanner analysis
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/**/*.xml"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="SampleWebApi.Tests/TestResults/**/*.xml"
           
-          # Run tests and generate code coverage report, saving to TestResults
-          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./TestResults/ /p:CoverletOutputFormat=opencover
+          # Run tests and generate code coverage report, saving to SampleWebApi.Tests/TestResults
+          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" /p:CoverletOutput=./SampleWebApi.Tests/TestResults/ /p:CoverletOutputFormat=opencover
 
-          # List the TestResults directory to display the path of the coverage file
-          Write-Host "Coverage file location(s):"
-          dir ./SampleWebApi.Tests
+          # List the SampleWebApi.Tests/TestResults directory to display the path of the coverage file
+          Write-Host "Coverage file location:"
+          dir ./SampleWebApi.Tests/TestResults/**/*.xml
 
           # Finish SonarScanner analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
