@@ -5,8 +5,14 @@ namespace SampleWebApi.Models
     public class Report
     {
         public int IdReport { get; set; }
-        public int IdFeedback { get; set; }
-        public int IdTipoFeedback { get; set; }
+
+        [Required(ErrorMessage = "O campo IdFeedback é obrigatório")]
+        public int? IdFeedbackUsuario { get; set; }
+
+        [Required(ErrorMessage = "O campo IdTipoReport é obrigatório")]
+        public int? IdTipoReport { get; set; }
+
+        [Required(ErrorMessage = "O campo Deferido é obrigatório")]
         public Boolean Deferido { get; set; }
 
     }
@@ -14,10 +20,10 @@ namespace SampleWebApi.Models
 
     public class TipoReport
     {
-        public string IdTipoReport { get; set; }
+        public int IdTipoReport { get; set; }
 
         [Required(ErrorMessage = "O campo Nome é obrigatório")]
         [StringLength(128, ErrorMessage = "Você excedeu o número de caracteres máximo: 128")]
-        public string Nome {  get; set; }
+        public string Nome { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace SampleWebApi.Migrations
                 name: "tblTipoReport",
                 columns: table => new
                 {
-                    IdTipoReport = table.Column<string>(type: "text", nullable: false),
+                    IdTipoReport = table.Column<string>(type: "integer", nullable: false),
                     Nome = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>

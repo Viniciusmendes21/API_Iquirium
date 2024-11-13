@@ -10,7 +10,8 @@ namespace SampleWebApi.Repository
             : base(options) { }
 
         public DbSet<FeedbackProduto> FeedbackProduto { get; set; }
-        //public DbSet<FeedbackUsuario> FeedbackUsuario { get; set; }
+        public DbSet<FeedbackUsuario> FeedbackUsuario { get; set; }
+        public DbSet<Report> Report { get; set; }
         public DbSet<TipoReport> TipoReport { get; set; }
         public DbSet<TipoFeedbackUsuario> TipoFeedbackUsuario { get; set; }
         public DbSet<TipoFeedbackProduto> TipoFeedbackProduto { get; set; }
@@ -26,6 +27,8 @@ namespace SampleWebApi.Repository
             modelBuilder.ApplyConfiguration(new UsuarioMapping());
             modelBuilder.ApplyConfiguration(new TipoReportMapping());
             modelBuilder.ApplyConfiguration(new TipoFeedbackUsuarioMapping());
+            modelBuilder.ApplyConfiguration(new ReportMapping());
+            modelBuilder.ApplyConfiguration(new FeedbackUsuarioMapping());
 
             base.OnModelCreating(modelBuilder);
         }
