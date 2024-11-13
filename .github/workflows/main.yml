@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-      - branch-*
+      - branch-**
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -18,7 +18,7 @@ jobs:
           distribution: 'zulu'
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -40,16 +40,29 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-          dotnet build ./SampleWebApi.sln
-          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=opencover" --results-directory ./TestResults
+          # Start the SonarCloud analysis
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="SampleWebApi.Tests/coverage.opencover.xml"
+
+          # Run tests and generate code coverage reports, saving to SampleWebApi.Tests directory
+          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory SampleWebApi.Tests
+
+          # List all files generated in the repository to locate coverage.opencover.xml
+          Write-Host "Procurando arquivos de cobertura em todo o repositório:"
+          Get-ChildItem -Path $PWD -Recurse | ForEach-Object {
+              Write-Host "Arquivo encontrado: $($_.FullName)"
+          }
+
+          # Verifique especificamente se o arquivo de cobertura existe e exiba o caminho completo
+          $coveragePath = Get-ChildItem -Path $PWD -Recurse -Filter "coverage.opencover.xml" | Select-Object -First 1
+          if ($coveragePath) {
+              Write-Host "Arquivo de cobertura encontrado em: $($coveragePath.FullName)"
+          } else {
+              Write-Host "Arquivo de cobertura NÃO encontrado"
+          }
+
+          # End the SonarCloud analysis
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: ./TestResults
