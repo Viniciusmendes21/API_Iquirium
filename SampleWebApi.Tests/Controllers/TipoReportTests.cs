@@ -25,8 +25,8 @@ namespace SampleWebApi.Tests.Controllers
         {
             var tipoReports = new List<TipoReport>
             {
-                new TipoReport { IdTipoReport = "1", Nome = "Relatório Anual" },
-                new TipoReport { IdTipoReport = "2", Nome = "Relatório Mensal" }
+                new TipoReport { IdTipoReport = 1, Nome = "Relatório Anual" },
+                new TipoReport { IdTipoReport = 2, Nome = "Relatório Mensal" }
             };
 
             _mockTipoReportRepo.Setup(repo => repo.GetTipoReport()).ReturnsAsync(tipoReports);
@@ -41,7 +41,7 @@ namespace SampleWebApi.Tests.Controllers
         [Fact]
         public async Task shouldReturnOkWhenTipoReportExistsById()
         {
-            var tipoReport = new TipoReport { IdTipoReport = "1", Nome = "Relatório Anual" };
+            var tipoReport = new TipoReport { IdTipoReport = 1, Nome = "Relatório Anual" };
 
             _mockTipoReportRepo.Setup(repo => repo.GetTipoReportByIdAsync(1)).ReturnsAsync(tipoReport);
 
@@ -49,7 +49,7 @@ namespace SampleWebApi.Tests.Controllers
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<TipoReport>(okResult.Value);
-            Assert.Equal("1", returnValue.IdTipoReport);
+            Assert.Equal(1, returnValue.IdTipoReport);
         }
 
         [Fact]
@@ -89,8 +89,8 @@ namespace SampleWebApi.Tests.Controllers
         [Fact]
         public async Task shouldReturnNoContentWhenTipoReportIsUpdated()
         {
-            var tipoReport = new TipoReport { IdTipoReport = "1", Nome = "Relatório Atualizado" };
-            var existingTipoReport = new TipoReport { IdTipoReport = "1", Nome = "Relatório Antigo" };
+            var tipoReport = new TipoReport { IdTipoReport = 1, Nome = "Relatório Atualizado" };
+            var existingTipoReport = new TipoReport { IdTipoReport = 1, Nome = "Relatório Antigo" };
 
             _mockTipoReportRepo.Setup(repo => repo.GetTipoReportByIdAsync(1)).ReturnsAsync(existingTipoReport);
             _mockTipoReportRepo.Setup(repo => repo.UpdateTipoReport(It.IsAny<TipoReport>())).Returns(Task.CompletedTask);
@@ -103,7 +103,7 @@ namespace SampleWebApi.Tests.Controllers
         [Fact]
         public async Task shouldReturnNotFoundWhenTipoReportDoesNotExistForUpdate()
         {
-            var tipoReport = new TipoReport { IdTipoReport = "1", Nome = "Relatório Atualizado" };
+            var tipoReport = new TipoReport { IdTipoReport = 1, Nome = "Relatório Atualizado" };
 
             _mockTipoReportRepo.Setup(repo => repo.GetTipoReportByIdAsync(1)).ReturnsAsync((TipoReport)null);
 
@@ -115,7 +115,7 @@ namespace SampleWebApi.Tests.Controllers
         [Fact]
         public async Task shouldReturnNoContentWhenTipoReportIsDeleted()
         {
-            var tipoReport = new TipoReport { IdTipoReport = "1", Nome = "Relatório a Ser Excluído" };
+            var tipoReport = new TipoReport { IdTipoReport = 1, Nome = "Relatório a Ser Excluído" };
 
             _mockTipoReportRepo.Setup(repo => repo.GetTipoReportByIdAsync(1)).ReturnsAsync(tipoReport);
             _mockTipoReportRepo.Setup(repo => repo.DeleteTipoReport(1)).Returns(Task.CompletedTask);

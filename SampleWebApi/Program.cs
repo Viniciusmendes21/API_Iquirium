@@ -13,6 +13,8 @@ builder.Services.AddScoped<ITipoFeedbackProdutoRepository, TipoFeedbackProdutoRe
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ITipoReportRepository, TipoReportRepository>();
 builder.Services.AddScoped<ITipoFeedbackUsuarioRepository, TipoFeedbackUsuarioRepository>();
+builder.Services.AddScoped<IFeedbackUsuarioRepository, FeedbackUsuarioRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 
 
