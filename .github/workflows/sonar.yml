@@ -1,4 +1,5 @@
 name: SonarCloud
+
 on:
   push:
     branches:
@@ -6,6 +7,7 @@ on:
       - branch-**
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
     name: Build and analyze
@@ -55,19 +57,14 @@ jobs:
       - name: Verify Coverage File
         shell: bash
         run: |
-          echo "Checking for coverage file..."
-          if [ -f "./TestResults/coverage.opencover.xml" ]; then
-            echo "Coverage file found."
-          else
+          echo "Searching for coverage file..."
+          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
+          if [ -z "$file" ]; then
             echo "Coverage file not found!"
             exit 1
+          else
+            echo "Found coverage file at $file"
           fi
-
-      - name: List All Files
-        shell: bash
-        run: |
-          echo "Listing all files in the directory..."
-          ls -R
 
       - name: Complete SonarCloud analysis
         env:
