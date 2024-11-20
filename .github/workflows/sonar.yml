@@ -78,6 +78,7 @@ jobs:
           else
             echo "Found coverage file at $file"
             exit 0
+          fi
 
       - name: Coverage test
         env:
