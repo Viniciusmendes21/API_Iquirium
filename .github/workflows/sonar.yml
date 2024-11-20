@@ -68,18 +68,18 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Verify Coverage File
-          shell: bash
-          run: |
-            echo "Searching for coverage file..."
-            file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
-            if [ -z "$file" ]; then
-              echo "Coverage file not found!"
-              exit 1
-            else
-              echo "Found coverage file at $file"
-              exit 0
+        shell: bash
+        run: |
+          echo "Searching for coverage file..."
+          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
+          if [ -z "$file" ]; then
+            echo "Coverage file not found!"
+            exit 1
+          else
+            echo "Found coverage file at $file"
+            exit 0
 
-            - name: Coverage test
+        - name: Coverage test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
