@@ -62,17 +62,25 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Verify Coverage File
-        shell: bash
-        run: |
-          echo "Searching for coverage file..."
-          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
-          if [ -z "$file" ]; then
-            echo "Coverage file not found!"
-            exit 1
-          else
-            echo "Found coverage file at $file"
-            exit 0
-          fi
+          shell: powershell
+          run: |
+            dotnet sonarscanner begin /k:"<sonar-project-key>"
+            /d:sonar.token="<sonar-token>"
+            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+            dotnet build --no-incremental
+            dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
+            dotnet sonarscanner end /d:sonar.token="<sonar-token>"
+        # shell: bash
+        # run: |
+        #   echo "Searching for coverage file..."
+        #   file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
+        #   if [ -z "$file" ]; then
+        #     echo "Coverage file not found!"
+        #     exit 1
+        #   else
+        #     echo "Found coverage file at $file"
+        #     exit 0
+        #   fi
 
       - name: Complete SonarCloud analysis
         env:
