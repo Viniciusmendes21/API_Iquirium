@@ -1,4 +1,5 @@
 name: SonarQube Cloud
+
 on:
   push:
     branches:
@@ -6,44 +7,111 @@ on:
       - branch-**
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   build:
     name: Build and analyze
     runs-on: windows-latest
     steps:
+      # Configura o JDK
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
-      - uses: actions/checkout@v4
+          distribution: 'zulu' # Alternativa: tem opções como temurin, corretto.
+
+      # Faz o checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0  # Desabilita clone raso para garantir que todo o histórico seja baixado.
+
+      # Verifica e garante a existência dos diretórios necessários para o cache
+      - name: Ensure Cache Directories Exist
+        shell: powershell
+        run: |
+          if (-Not (Test-Path "./.sonar/cache")) {
+            New-Item -Path "./.sonar/cache" -ItemType Directory
+          }
+          if (-Not (Test-Path "./.sonar/scanner")) {
+            New-Item -Path "./.sonar/scanner" -ItemType Directory
+          }
+
+      # Configura o cache do pacote SonarQube
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
-          path: ~\sonar\cache
+          path: ./.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
+      # Configura o cache do scanner SonarQube
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
-          path: .\.sonar\scanner
+          path: ./.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
+
+      # Instala o scanner SonarQube, caso não esteja em cache
       - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
+          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+      # Lista os diretórios criados para depuração
+      - name: List Sonar directories for debugging
+        shell: powershell
+        run: |
+          Get-ChildItem -Path .\.sonar -Recurse
+
+      # Inicia a análise do SonarQube
+      - name: Begin SonarQube analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+
+      # Restaura as dependências
+      - name: Restore dependencies
+        shell: powershell
+        run: |
+          dotnet restore
+
+      # Compila o projeto
+      - name: Build project
+        shell: powershell
+        run: |
+          dotnet build --no-restore
+
+      # Executa os testes e coleta cobertura de código
+      - name: Run tests with coverage
+        shell: powershell
+        run: |
+          dotnet test --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory "./TestResults"
+
+      # Verifica se o arquivo de cobertura foi gerado
+      - name: Verify Coverage File
+        shell: bash
+        run: |
+          echo "Searching for coverage file..."
+          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
+          if [ -z "$file" ]; then
+            echo "Coverage file not found!"
+            exit 1
+          else
+            echo "Found coverage file at $file"
+            exit 0
+          fi
+
+      # Finaliza a análise do SonarQube com o arquivo de cobertura
+      - name: Complete SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
