@@ -45,6 +45,11 @@ jobs:
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
+      - name: Restore dependencies
+        shell: powershell
+        run: |
+          dotnet restore ./SampleWebApi.sln
+
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -52,7 +57,9 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
+          dotnet build ./SampleWebApi.sln
           dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory "./TestResults"
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Verify Coverage File
         shell: bash
