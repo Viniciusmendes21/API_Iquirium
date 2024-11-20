@@ -71,28 +71,34 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin `
-            /k:"Viniciusmendes21_API_Iquirium" `
-            /o:"viniciusmendes21" `
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.host.url="https://sonarcloud.io" `
-            /d:sonar.cs.opencover.reportsPaths="./TestResults/coverage.opencover.xml" `
-            /d:sonar.coverage.exclusions="**/Migrations/**"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
           dotnet build ./SampleWebApi.sln
-          dotnet test ./SampleWebApi.sln `
-            --collect:"XPlat Code Coverage;Format=cobertura,opencover" `
-            --results-directory "./TestResults"
+          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory "./TestResults"
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Verify Coverage File
         shell: bash
         run: |
-          echo "Verifying coverage.opencover.xml..."
-          if [ ! -f "./TestResults/coverage.opencover.xml" ]; then
+          echo "Searching for coverage file..."
+          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
+          if [ -z "$file" ]; then
             echo "Coverage file not found!"
             exit 1
           else
-            echo "Coverage file found!"
+            echo "Found coverage file at $file"
+            exit 0
           fi
+
+      - name: Coverage test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
+          dotnet build ./SampleWebApi.sln
+          .\.sonar\coverage\dotnet-coverage collect --output ./TestResults/coverage.opencover.xml
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Complete SonarCloud analysis
         env:
