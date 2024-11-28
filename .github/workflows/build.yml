@@ -10,19 +10,23 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
+    name: Build and analyze with SonarCloud
     runs-on: windows-latest
+
     steps:
+      # Configurar JDK 17 (necessário para SonarCloud)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
+      # Clonar o repositório
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+          fetch-depth: 0 # Clonagem completa para melhor análise do SonarCloud
 
+      # Cache para pacotes do SonarCloud
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -30,6 +34,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # Cache para o SonarCloud Scanner
       - name: Cache SonarCloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
@@ -38,14 +43,7 @@ jobs:
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
-      - name: Cache Dotnet Coverage
-        id: cache-dotnet-coverage
-        uses: actions/cache@v4
-        with:
-          path: .\.sonar\coverage
-          key: ${{ runner.os }}-dotnet-coverage
-          restore-keys: ${{ runner.os }}-dotnet-coverage
-
+      # Instalar SonarCloud Scanner (se necessário)
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
@@ -53,30 +51,33 @@ jobs:
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-      - name: Install Dotnet Coverage
-        if: steps.cache-dotnet-coverage.outputs.cache-hit != 'true'
-        shell: powershell
-        run: |
-          New-Item -Path .\.sonar\coverage -ItemType Directory
-          dotnet tool install dotnet-coverage --tool-path .\.sonar\coverage
-
+      # Restaurar dependências do .NET
       - name: Restore dependencies
         shell: powershell
         run: |
           dotnet restore ./SampleWebApi.sln
 
-      - name: Build and analyze
+      # Iniciar a análise do SonarCloud
+      - name: Begin SonarCloud analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="TestResults/coverage.opencover.xml"
-          dotnet build ./SampleWebApi.sln
-          dotnet test ./SampleWebApi.sln --collect:"XPlat Code Coverage;Format=cobertura,opencover" --results-directory "./TestResults"
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin `
+            /k:"Viniciusmendes21_API_Iquirium" `
+            /o:"viniciusmendes21" `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
+            /d:sonar.host.url="https://sonarcloud.io" `
+            /d:sonar.cs.opencover.reportsPaths="./TestResults/coverage.opencover.xml"
 
-      - name: Run tests and generate coverage with Coverlet
+      # Build do projeto
+      - name: Build project
+        shell: powershell
+        run: |
+          dotnet build ./SampleWebApi.sln --no-restore
+
+      # Executar testes e gerar cobertura de código
+      - name: Run tests and generate coverage
         shell: powershell
         run: |
           dotnet test ./SampleWebApi.sln `
@@ -86,6 +87,7 @@ jobs:
             /p:CoverletOutput=./TestResults/coverage.opencover.xml `
             /p:CoverletOutputFormat=opencover
 
+      # Verificar se o arquivo de cobertura foi gerado
       - name: Verify Coverage File
         shell: bash
         run: |
@@ -96,12 +98,20 @@ jobs:
             exit 1
           else
             echo "Found coverage file at $file"
-            exit 0
           fi
 
+      # Listar conteúdo do diretório de resultados para debug
+      - name: List TestResults Directory
+        shell: bash
+        run: |
+          echo "Contents of TestResults directory:"
+          ls -la ./TestResults
+
+      # Finalizar análise do SonarCloud
       - name: Complete SonarCloud analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner end `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
