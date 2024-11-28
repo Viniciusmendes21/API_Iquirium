@@ -1,5 +1,4 @@
-name: SonarCloud
-
+name: SonarQube Cloud
 on:
   push:
     branches:
@@ -7,111 +6,44 @@ on:
       - branch-**
   pull_request:
     types: [opened, synchronize, reopened]
-
 jobs:
   build:
-    name: Build and analyze with SonarCloud
+    name: Build and analyze
     runs-on: windows-latest
-
     steps:
-      # Configurar JDK 17 (necessário para SonarCloud)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu'
-
-      # Clonar o repositório
+          distribution: 'zulu' # Alternative distribution options are available.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Clonagem completa para melhor análise do SonarCloud
-
-      # Cache para pacotes do SonarCloud
-      - name: Cache SonarCloud packages
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      # Cache para o SonarCloud Scanner
-      - name: Cache SonarCloud scanner
+      - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
           path: .\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
-
-      # Instalar SonarCloud Scanner (se necessário)
-      - name: Install SonarCloud scanner
+      - name: Install SonarQube Cloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-
-      # Restaurar dependências do .NET
-      - name: Restore dependencies
-        shell: powershell
-        run: |
-          dotnet restore ./SampleWebApi.sln
-
-      # Iniciar a análise do SonarCloud
-      - name: Begin SonarCloud analysis
+      - name: Build and analyze
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin `
-            /k:"Viniciusmendes21_API_Iquirium" `
-            /o:"viniciusmendes21" `
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.host.url="https://sonarcloud.io" `
-            /d:sonar.cs.opencover.reportsPaths="./TestResults/coverage.opencover.xml"
-
-      # Build do projeto
-      - name: Build project
-        shell: powershell
-        run: |
-          dotnet build ./SampleWebApi.sln --no-restore
-
-      # Executar testes e gerar cobertura de código
-      - name: Run tests and generate coverage
-        shell: powershell
-        run: |
-          dotnet test ./SampleWebApi.sln `
-            --results-directory "./TestResults" `
-            --logger "trx" `
-            /p:CollectCoverage=true `
-            /p:CoverletOutput=./TestResults/coverage.opencover.xml `
-            /p:CoverletOutputFormat=opencover
-
-      # Verificar se o arquivo de cobertura foi gerado
-      - name: Verify Coverage File
-        shell: bash
-        run: |
-          echo "Searching for coverage file..."
-          file=$(find ./TestResults -name "coverage.opencover.xml" | head -n 1)
-          if [ -z "$file" ]; then
-            echo "Coverage file not found!"
-            exit 1
-          else
-            echo "Found coverage file at $file"
-          fi
-
-      # Listar conteúdo do diretório de resultados para debug
-      - name: List TestResults Directory
-        shell: bash
-        run: |
-          echo "Contents of TestResults directory:"
-          ls -la ./TestResults
-
-      # Finalizar análise do SonarCloud
-      - name: Complete SonarCloud analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: powershell
-        run: |
-          .\.sonar\scanner\dotnet-sonarscanner end `
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"Viniciusmendes21_API_Iquirium" /o:"viniciusmendes21" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
