@@ -1,11 +1,23 @@
-using Microsoft.EntityFrameworkCore;
 using SampleWebApi.Repository;
+using SampleWebApi.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IFeedbackProdutoRepository, FeedbackProdutoRepository>();
+builder.Services.AddScoped<IPerfilRepository, PerfilRepository>();
+builder.Services.AddScoped<ITipoFeedbackProdutoRepository, TipoFeedbackProdutoRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITipoReportRepository, TipoReportRepository>();
+builder.Services.AddScoped<ITipoFeedbackUsuarioRepository, TipoFeedbackUsuarioRepository>();
+builder.Services.AddScoped<IFeedbackUsuarioRepository, FeedbackUsuarioRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
