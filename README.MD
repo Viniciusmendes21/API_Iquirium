@@ -4,7 +4,7 @@
 - Bernardo James
 - Bernardo Antunes
 - Matheus Jannotti
-- Gabriel Laje
+- Gabriel Zaharoff
 - Vinícius Mendes
 
 # Diagramas
